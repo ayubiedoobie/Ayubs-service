@@ -1,4 +1,3 @@
-// index.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -17,11 +16,17 @@ const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // GET /posts - return all posts
-app.get("/posts", async (req, res) => {
+app.get('/posts', async (req, res) => {
     try {
         const { data, error } = await supabase
-            .from("posts")
-            .select("id, content, user_id, created_at");
+        .from("posts")
+        .select(`
+          id,
+          content,
+          user_id,
+          created_at,
+          likes(count)
+        `);
 
         if (error) throw error;
 
@@ -30,8 +35,8 @@ app.get("/posts", async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch posts" });
     }
+})
 
-});
 
 app.post("/posts", async (req, res) => {
     try {
