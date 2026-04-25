@@ -115,7 +115,39 @@ app.post("/signup", async (req, res) => {
         console.error(err);
         res.status(400).json({ error: "Signup failed" });
     }
+}); app.post("/like",async(req,res) => {
+    
+    try{
+        const { user_id, posts_id } = req.body;
+        const{data,error} = await supabase
+        .from("likes")
+        .insert([{posts_id,user_id}])
+        .select();
+        if (error) throw error;
+
+        res.status(201).json(data);
+    } catch (err){
+        console.error(err);
+        res.status(500).json({error: "failed to like post"});
+    }
+}); app.post("/comment", async (req, res) => {
+    try {
+        const { post_id, user_id, content } = req.body;
+
+        const { data, error } = await supabase
+            .from("comments")
+            .insert([{ post_id, user_id, content }])
+            .select();
+
+        if (error) throw error;
+
+        res.status(201).json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to add comment" });
+    }
 });
+
 
 const PORT = process.env.PORT || 4999;//update
 app.listen(PORT, () => {
